@@ -23,6 +23,9 @@ type MatchStats = {
   }[];
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function PredictionPage() {
   const { matches, teams, players, groups, stages } = await getPublicDataset();
   const supabase = hasSupabaseConfig() ? createServerSupabaseClient() : null;

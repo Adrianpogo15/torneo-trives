@@ -2,6 +2,9 @@ import { AppShell } from "@/components/app-shell";
 import { getPublicDataset } from "@/lib/public-data";
 import { ResultsBrowser } from "@/components/results-browser";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ResultsPage() {
   const { matches, teams, groups, stages, events, players } = await getPublicDataset();
 

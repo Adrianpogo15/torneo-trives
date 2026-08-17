@@ -10,6 +10,9 @@ import { AppShell } from "@/components/app-shell";
 import { getPublicDataset } from "@/lib/public-data";
 import { AccessModal } from "@/components/access-modal";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const menuItems = [
   {
     href: "/equipos",

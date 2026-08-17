@@ -2,6 +2,9 @@ import { AppShell } from "@/components/app-shell";
 import { getGroupedTeams, getPublicDataset } from "@/lib/public-data";
 import { TeamsBrowser } from "@/components/teams-browser";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function TeamsPage() {
   const { teams, players, groups, groupTeams, events, matches } = await getPublicDataset();
   const goalsByPlayer = events.reduce<Record<string, number>>((acc, event) => {
