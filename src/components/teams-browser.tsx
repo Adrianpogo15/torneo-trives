@@ -47,6 +47,10 @@ function penaltyText(match: TeamsBrowserProps["matches"][number]) {
   return `Penaltis ${match.home_penalty_score}-${match.away_penalty_score}`;
 }
 
+function playerName(player: TeamCard["players"][number]) {
+  return `${player.first_name} ${player.last_name}`.trim();
+}
+
 export function TeamsBrowser({ teams, matches }: TeamsBrowserProps) {
   const [query, setQuery] = useState("");
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
@@ -60,7 +64,7 @@ export function TeamsBrowser({ teams, matches }: TeamsBrowserProps) {
 
     return teams.filter((team) => {
       const playerMatch = team.players.some((player) =>
-        `${player.first_name} ${player.last_name}`.toLowerCase().includes(normalizedQuery)
+        playerName(player).toLowerCase().includes(normalizedQuery)
       );
 
       return (
@@ -120,7 +124,7 @@ export function TeamsBrowser({ teams, matches }: TeamsBrowserProps) {
                   key={player.id}
                   className="grid grid-cols-[1fr_auto] items-center gap-3 rounded border border-line px-3 py-2 text-sm"
                 >
-                  <span>{player.first_name} {player.last_name}</span>
+                  <span>{playerName(player)}</span>
                   <span className="rounded bg-fog px-2 py-1 text-xs font-black">
                     {player.goals} goles
                   </span>
@@ -180,7 +184,7 @@ export function TeamsBrowser({ teams, matches }: TeamsBrowserProps) {
                       key={player.id}
                       className="grid grid-cols-[1fr_auto] items-center gap-3 rounded border border-line px-3 py-2 text-sm"
                     >
-                      <span>{player.first_name} {player.last_name}</span>
+                      <span>{playerName(player)}</span>
                       <span className="rounded bg-gold-50 px-2 py-1 text-xs font-black">
                         {player.goals} goles
                       </span>

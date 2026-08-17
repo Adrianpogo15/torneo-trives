@@ -44,8 +44,7 @@ create table public.players (
   last_name text not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  constraint players_first_name_not_empty check (length(trim(first_name)) > 0),
-  constraint players_last_name_not_empty check (length(trim(last_name)) > 0)
+  constraint players_first_name_not_empty check (length(trim(first_name)) > 0)
 );
 
 create table public.stages (

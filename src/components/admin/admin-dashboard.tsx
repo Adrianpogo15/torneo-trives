@@ -206,7 +206,11 @@ function formatTeamName(teams: Team[], teamId: string | null) {
 
 function formatPlayerName(players: Player[], playerId: string | null) {
   const player = players.find((item) => item.id === playerId);
-  return player ? `${player.first_name} ${player.last_name}` : "Sin jugador";
+  return player ? playerDisplayName(player) : "Sin jugador";
+}
+
+function playerDisplayName(player: Player) {
+  return `${player.first_name} ${player.last_name}`.trim();
 }
 
 function formatMatchName(matches: Match[], teams: Team[], matchId: string) {
@@ -1222,7 +1226,6 @@ export function AdminDashboard() {
               />
               <AdminInput
                 label="Apellidos"
-                required
                 value={playerForm.last_name}
                 onChange={(last_name) =>
                   setPlayerForm((current) => ({ ...current, last_name }))
@@ -1252,9 +1255,7 @@ export function AdminDashboard() {
                   className="flex flex-wrap items-center justify-between gap-3 rounded border border-line px-3 py-3"
                 >
                   <div>
-                    <p className="font-bold">
-                      {player.first_name} {player.last_name}
-                    </p>
+                    <p className="font-bold">{playerDisplayName(player)}</p>
                     <p className="text-xs text-ink/50">
                       {formatTeamName(teams, player.team_id)}
                     </p>
@@ -1279,7 +1280,7 @@ export function AdminDashboard() {
                       onClick={() =>
                         requestConfirm({
                           title: "Eliminar jugador",
-                          body: `¿Seguro que quieres eliminar ${player.first_name} ${player.last_name}?`,
+                          body: `¿Seguro que quieres eliminar ${playerDisplayName(player)}?`,
                           confirmLabel: "Eliminar jugador",
                           onConfirm: () => deletePlayer(player),
                         })
@@ -1829,7 +1830,7 @@ export function AdminDashboard() {
                 <option value="">Sin jugador</option>
                 {eventPlayers.map((player) => (
                   <option key={player.id} value={player.id}>
-                    {player.first_name} {player.last_name}
+                    {playerDisplayName(player)}
                   </option>
                 ))}
               </AdminSelect>
@@ -1949,7 +1950,6 @@ export function AdminDashboard() {
             />
             <AdminInput
               label="Apellidos"
-              required
               value={playerForm.last_name}
               onChange={(last_name) =>
                 setPlayerForm((current) => ({ ...current, last_name }))
@@ -1977,9 +1977,7 @@ export function AdminDashboard() {
                   key={player.id}
                   className="flex flex-wrap items-center justify-between gap-3 rounded border border-line px-3 py-3"
                 >
-                  <p className="font-bold">
-                    {player.first_name} {player.last_name}
-                  </p>
+                  <p className="font-bold">{playerDisplayName(player)}</p>
                   <div className="flex gap-2">
                     <button
                       className="rounded bg-fog p-2 hover:bg-gold-50"
@@ -2002,7 +2000,7 @@ export function AdminDashboard() {
                       onClick={() =>
                         requestConfirm({
                           title: "Eliminar jugador",
-                          body: `¿Seguro que quieres eliminar ${player.first_name} ${player.last_name}?`,
+                          body: `¿Seguro que quieres eliminar ${playerDisplayName(player)}?`,
                           confirmLabel: "Eliminar jugador",
                           onConfirm: () => deletePlayer(player),
                         })
@@ -2097,7 +2095,7 @@ export function AdminDashboard() {
               <option value="">Sin jugador</option>
               {eventPlayers.map((player) => (
                 <option key={player.id} value={player.id}>
-                  {player.first_name} {player.last_name}
+                  {playerDisplayName(player)}
                 </option>
               ))}
             </AdminSelect>

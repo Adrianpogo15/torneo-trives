@@ -69,7 +69,7 @@ function teamLogo(teams: Team[], teamId: string | null) {
 
 function playerName(players: Player[], playerId: string | null) {
   const player = players.find((item) => item.id === playerId);
-  return player ? `${player.first_name} ${player.last_name}` : "Sin jugador";
+  return player ? `${player.first_name} ${player.last_name}`.trim() : "Sin jugador";
 }
 
 function matchStage(match: Match, stages: Stage[]) {

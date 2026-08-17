@@ -117,7 +117,11 @@ function teamLogo(teams: Team[], teamId: string | null) {
 
 function playerName(players: Player[], playerId: string | null) {
   const player = players.find((item) => item.id === playerId);
-  return player ? `${player.first_name} ${player.last_name}` : "";
+  return player ? `${player.first_name} ${player.last_name}`.trim() : "";
+}
+
+function playerDisplayName(player: Player) {
+  return `${player.first_name} ${player.last_name}`.trim();
 }
 
 function isPredictionOpen(match: Match) {
@@ -789,8 +793,7 @@ export function PorraDashboard({
                         <option value="">Sin elegir</option>
                         {availablePlayers.map((player) => (
                           <option key={player.id} value={player.id}>
-                            {player.first_name} {player.last_name} -{" "}
-                            {teamName(teams, player.team_id)}
+                            {playerDisplayName(player)} - {teamName(teams, player.team_id)}
                           </option>
                         ))}
                       </select>

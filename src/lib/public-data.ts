@@ -81,7 +81,7 @@ export type TeamWithPlayers = Team & {
 };
 
 export function formatPlayerName(player: Player) {
-  return `${player.first_name} ${player.last_name}`;
+  return `${player.first_name} ${player.last_name}`.trim();
 }
 
 export function formatMatchDate(value: string | null) {

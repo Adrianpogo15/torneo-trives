@@ -7,6 +7,7 @@ Este proyecto usara Supabase para base de datos PostgreSQL, autenticacion y, mas
 - `supabase/migrations/001_initial_schema.sql`: esquema inicial de base de datos.
 - `supabase/seed.sql`: datos iniciales del torneo y fases base.
 - `supabase/seed-trives-2026-demo.sql`: datos demo completos para probar la parte publica.
+- `supabase/seed-trives-2026-players.sql`: jugadores reales cargados por equipo.
 
 ## Orden de ejecucion
 
@@ -25,6 +26,13 @@ Para probar la web publica con datos realistas, ejecuta despues:
 
 Este seed crea Torneo Trives 2026 con 12 equipos, 4 grupos de 3 equipos,
 partidos, resultados, penaltis de desempate y eventos de goles/tarjetas.
+
+Para cargar jugadores reales por equipo, ejecuta despues:
+
+```sql
+-- contenido de supabase/migrations/007_allow_players_without_last_name.sql
+-- contenido de supabase/seed-trives-2026-players.sql
+```
 
 ## Convertir un usuario en admin
 
