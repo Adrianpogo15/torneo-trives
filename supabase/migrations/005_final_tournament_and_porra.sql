@@ -374,7 +374,7 @@ $$;
 
 drop trigger if exists matches_recalculate_porra_predictions on public.matches;
 create trigger matches_recalculate_porra_predictions
-after update of status, home_score, away_score on public.matches
+after update of status, home_score, away_score, home_penalty_score, away_penalty_score on public.matches
 for each row execute function public.recalculate_porra_after_match_finished();
 
 create or replace function public.recalculate_porra_after_event_change()
