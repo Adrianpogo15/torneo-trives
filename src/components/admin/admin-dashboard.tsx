@@ -1138,6 +1138,7 @@ export function AdminDashboard() {
                       <button
                         className="inline-flex items-center gap-1 rounded bg-gold-400 px-2.5 py-2 text-xs font-black uppercase text-ink hover:bg-gold-300"
                         onClick={() => {
+                          setPlayerListTeamId(null);
                           setPlayerForm({
                             ...emptyPlayerForm,
                             team_id: team.id,
@@ -1934,6 +1935,7 @@ export function AdminDashboard() {
           subtitle={playerModalTeam.name}
           onClose={() => {
             setPlayerModalTeamId(null);
+            setPlayerListTeamId(null);
             setPlayerForm(emptyPlayerForm);
           }}
         >
