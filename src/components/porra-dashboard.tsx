@@ -427,6 +427,41 @@ export function PorraDashboard({
     window.setTimeout(() => setMessage(null), 2200);
   }
 
+  async function resetPrediction(match: Match) {
+    if (!user) return;
+
+    setSavingMatchId(match.id);
+    setError(null);
+    setMessage(null);
+
+    const { error: resetError } = await supabase.rpc("reset_porra_prediction", {
+      porra_user_id_input: user.id,
+      match_id_input: match.id,
+    });
+
+    setSavingMatchId(null);
+
+    if (resetError) {
+      setError(resetError.message || "No se pudo resetear el resultado.");
+      return;
+    }
+
+    setLocalPredictions((current) =>
+      current.filter((prediction) => prediction.match_id !== match.id)
+    );
+    setDrafts((current) => ({
+      ...current,
+      [match.id]: {
+        home_score: "",
+        away_score: "",
+        first_scorer_player_id: "",
+        penalty_winner_team_id: "",
+      },
+    }));
+    setMessage("Pronostico reseteado.");
+    window.setTimeout(() => setMessage(null), 2200);
+  }
+
   function matchPlayers(match: Match) {
     return players.filter(
       (player) =>
@@ -875,18 +910,31 @@ export function PorraDashboard({
                         <ChartNoAxesColumnIncreasing size={15} aria-hidden="true" />
                         Estadisticas
                       </button>
-                      <button
-                        className="inline-flex items-center justify-center gap-2 rounded bg-gold-400 px-3 py-2.5 text-xs font-black uppercase text-ink transition hover:bg-gold-300 disabled:cursor-not-allowed disabled:opacity-45"
-                        disabled={!open || savingMatchId === match.id}
-                        type="submit"
-                      >
-                        <Save size={15} aria-hidden="true" />
-                        {savingMatchId === match.id
-                          ? "Guardando"
-                          : prediction
-                            ? "Actualizar"
-                            : "Guardar"}
-                      </button>
+                      <div className="flex flex-wrap justify-end gap-2">
+                        {prediction && open ? (
+                          <button
+                            className="inline-flex items-center justify-center gap-2 rounded border border-line px-3 py-2.5 text-xs font-black uppercase text-ink transition hover:border-red-300 hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-45"
+                            disabled={savingMatchId === match.id}
+                            onClick={() => resetPrediction(match)}
+                            type="button"
+                          >
+                            <RotateCcw size={15} aria-hidden="true" />
+                            Resetear
+                          </button>
+                        ) : null}
+                        <button
+                          className="inline-flex items-center justify-center gap-2 rounded bg-gold-400 px-3 py-2.5 text-xs font-black uppercase text-ink transition hover:bg-gold-300 disabled:cursor-not-allowed disabled:opacity-45"
+                          disabled={!open || savingMatchId === match.id}
+                          type="submit"
+                        >
+                          <Save size={15} aria-hidden="true" />
+                          {savingMatchId === match.id
+                            ? "Guardando"
+                            : prediction
+                              ? "Actualizar"
+                              : "Guardar"}
+                        </button>
+                      </div>
                     </div>
                   </form>
                 </div>

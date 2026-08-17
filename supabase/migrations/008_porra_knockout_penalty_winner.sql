@@ -283,7 +283,18 @@ begin
   from public.matches
   where id = target_match_id;
 
-  if match_record.id is null or match_record.status <> 'finished' then
+  if match_record.id is null then
+    return;
+  end if;
+
+  if match_record.status <> 'finished' then
+    update public.porra_predictions p
+    set
+      points = 0,
+      locked_at = match_record.scheduled_at,
+      updated_at = now()
+    where p.match_id = target_match_id;
+
     return;
   end if;
 

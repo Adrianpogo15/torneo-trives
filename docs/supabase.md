@@ -40,6 +40,14 @@ Para que La Porra pida ganador por penaltis en eliminatorias empatadas, ejecuta:
 -- contenido de supabase/migrations/008_porra_knockout_penalty_winner.sql
 ```
 
+Para recalcular la porra al cambiar penaltis o devolver partidos a programado, y
+permitir resetear pronosticos, ejecuta:
+
+```sql
+-- contenido de supabase/migrations/009_recalculate_porra_on_penalties.sql
+-- contenido de supabase/migrations/010_reset_porra_predictions.sql
+```
+
 ## Convertir un usuario en admin
 
 Cuando ya exista tu usuario, ejecuta este SQL cambiando el email por el tuyo:
