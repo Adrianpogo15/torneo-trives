@@ -50,6 +50,7 @@ type Group = {
 type Stage = {
   id: string;
   name: string;
+  type: "groups" | "knockout";
 };
 
 type PorraUser = {
@@ -65,6 +66,7 @@ type Prediction = {
   home_score: number;
   away_score: number;
   first_scorer_player_id: string | null;
+  penalty_winner_team_id: string | null;
   points: number;
   locked_at: string | null;
 };
@@ -103,6 +105,7 @@ type PredictionDraft = {
   home_score: string;
   away_score: string;
   first_scorer_player_id: string;
+  penalty_winner_team_id: string;
 };
 
 const storageKey = "torneo-trives-porra-user";
@@ -141,6 +144,7 @@ function buildInitialDrafts(predictions: Prediction[]) {
       home_score: String(prediction.home_score),
       away_score: String(prediction.away_score),
       first_scorer_player_id: prediction.first_scorer_player_id || "",
+      penalty_winner_team_id: prediction.penalty_winner_team_id || "",
     };
     return acc;
   }, {});
@@ -354,9 +358,23 @@ export function PorraDashboard({
         home_score: current[matchId]?.home_score || "",
         away_score: current[matchId]?.away_score || "",
         first_scorer_player_id: current[matchId]?.first_scorer_player_id || "",
+        penalty_winner_team_id: current[matchId]?.penalty_winner_team_id || "",
         [field]: value,
       },
     }));
+  }
+
+  function isKnockoutMatch(match: Match) {
+    return stages.find((stage) => stage.id === match.stage_id)?.type === "knockout";
+  }
+
+  function needsPenaltyWinner(match: Match, draft: PredictionDraft) {
+    return (
+      isKnockoutMatch(match) &&
+      draft.home_score !== "" &&
+      draft.away_score !== "" &&
+      Number(draft.home_score) === Number(draft.away_score)
+    );
   }
 
   async function savePrediction(event: FormEvent<HTMLFormElement>, match: Match) {
@@ -366,6 +384,11 @@ export function PorraDashboard({
     const draft = drafts[match.id];
     if (!draft?.home_score || !draft?.away_score) {
       setError("Introduce marcador local y visitante.");
+      return;
+    }
+
+    if (needsPenaltyWinner(match, draft) && !draft.penalty_winner_team_id) {
+      setError("Elige ganador en penaltis para este partido.");
       return;
     }
 
@@ -380,6 +403,9 @@ export function PorraDashboard({
         home_score_input: Number(draft.home_score),
         away_score_input: Number(draft.away_score),
         first_scorer_player_id_input: draft.first_scorer_player_id || null,
+        penalty_winner_team_id_input: needsPenaltyWinner(match, draft)
+          ? draft.penalty_winner_team_id
+          : null,
       })
       .returns<Prediction>();
 
@@ -652,9 +678,11 @@ export function PorraDashboard({
               home_score: "",
               away_score: "",
               first_scorer_player_id: "",
+              penalty_winner_team_id: "",
             };
             const open = isPredictionOpen(match);
             const availablePlayers = matchPlayers(match);
+            const showPenaltyWinner = needsPenaltyWinner(match, draft);
 
             return (
               <article
@@ -778,6 +806,39 @@ export function PorraDashboard({
                         />
                       </label>
                     </div>
+                    {showPenaltyWinner ? (
+                      <label className="block">
+                        <span className="mb-1 block text-xs font-black uppercase text-ink/55">
+                          Ganador en penaltis
+                        </span>
+                        <select
+                          className="w-full rounded border border-line px-3 py-2.5 text-sm outline-none focus:border-gold-500 disabled:bg-fog disabled:text-ink/45"
+                          disabled={!open}
+                          value={draft.penalty_winner_team_id}
+                          onChange={(event) =>
+                            updateDraft(match.id, "penalty_winner_team_id", event.target.value)
+                          }
+                          required
+                        >
+                          <option value="">Elige equipo</option>
+                          {match.home_team_id ? (
+                            <option value={match.home_team_id}>
+                              {teamName(teams, match.home_team_id)}
+                            </option>
+                          ) : null}
+                          {match.away_team_id ? (
+                            <option value={match.away_team_id}>
+                              {teamName(teams, match.away_team_id)}
+                            </option>
+                          ) : null}
+                        </select>
+                        {prediction?.penalty_winner_team_id ? (
+                          <span className="mt-1 block text-xs text-ink/45">
+                            Elegido: {teamName(teams, prediction.penalty_winner_team_id)}
+                          </span>
+                        ) : null}
+                      </label>
+                    ) : null}
                     <label className="block">
                       <span className="mb-1 block text-xs font-black uppercase text-ink/55">
                         Primer goleador

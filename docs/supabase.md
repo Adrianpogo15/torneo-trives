@@ -34,6 +34,12 @@ Para cargar jugadores reales por equipo, ejecuta despues:
 -- contenido de supabase/seed-trives-2026-players.sql
 ```
 
+Para que La Porra pida ganador por penaltis en eliminatorias empatadas, ejecuta:
+
+```sql
+-- contenido de supabase/migrations/008_porra_knockout_penalty_winner.sql
+```
+
 ## Convertir un usuario en admin
 
 Cuando ya exista tu usuario, ejecuta este SQL cambiando el email por el tuyo:
