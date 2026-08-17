@@ -8,6 +8,7 @@ import { StatsTables } from "@/components/stats-tables";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export default async function StatsPage() {
   const { events, players, teams } = await getPublicDataset();

@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import {
   createServerSupabaseClient,
   hasSupabaseConfig,
@@ -106,6 +107,8 @@ function assertConfig() {
 }
 
 export async function getTournament() {
+  noStore();
+
   const supabase = assertConfig();
 
   if (!supabase) {
@@ -133,6 +136,8 @@ export async function getTournament() {
 }
 
 export async function getPublicDataset() {
+  noStore();
+
   const supabase = assertConfig();
   const tournament = await getTournament();
 

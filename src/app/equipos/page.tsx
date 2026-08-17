@@ -4,6 +4,7 @@ import { TeamsBrowser } from "@/components/teams-browser";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export default async function TeamsPage() {
   const { teams, players, groups, groupTeams, events, matches } = await getPublicDataset();
