@@ -146,6 +146,21 @@ function cleanDni(value: string) {
   return value.toUpperCase().replace(/[^0-9A-Z]/g, "");
 }
 
+function isValidDni(value: string) {
+  const normalized = cleanDni(value);
+  const match = normalized.match(/^([XYZ]|\d)(\d{7})([A-Z])$/);
+
+  if (!match) {
+    return false;
+  }
+
+  const prefix = match[1].replace("X", "0").replace("Y", "1").replace("Z", "2");
+  const number = Number(`${prefix}${match[2]}`);
+  const letters = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+  return letters[number % 23] === match[3];
+}
+
 function authErrorMessage(message: string | undefined, type: "login" | "register") {
   const normalized = (message || "").toLowerCase();
 
@@ -266,6 +281,11 @@ export function PorraDashboard({
     const normalizedDni = cleanDni(dni);
 
     if (authTab === "register") {
+      if (!isValidDni(normalizedDni)) {
+        setError("Introduce un DNI valido.");
+        return;
+      }
+
       if (!displayName.trim()) {
         setError("Introduce un nombre de usuario.");
         return;

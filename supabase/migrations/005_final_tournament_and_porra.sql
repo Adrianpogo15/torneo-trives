@@ -55,6 +55,36 @@ as $$
   select upper(regexp_replace(coalesce(value, ''), '[^0-9A-Z]', '', 'g'));
 $$;
 
+create or replace function public.is_valid_dni(value text)
+returns boolean
+language plpgsql
+immutable
+as $$
+declare
+  clean_value text := public.normalize_dni(value);
+  dni_number integer;
+  expected_letter text;
+  letters constant text := 'TRWAGMYFPDXBNJZSQVHLCKE';
+begin
+  if clean_value !~ '^([0-9]{8}|[XYZ][0-9]{7})[A-Z]$' then
+    return false;
+  end if;
+
+  dni_number := replace(
+    replace(
+      replace(left(clean_value, 8), 'X', '0'),
+      'Y',
+      '1'
+    ),
+    'Z',
+    '2'
+  )::integer;
+  expected_letter := substr(letters, (dni_number % 23) + 1, 1);
+
+  return right(clean_value, 1) = expected_letter;
+end;
+$$;
+
 create or replace function public.register_porra_user(
   dni_input text,
   display_name_input text,
@@ -69,7 +99,7 @@ declare
   clean_dni text := public.normalize_dni(dni_input);
   clean_name text := trim(display_name_input);
 begin
-  if length(clean_dni) < 5 then
+  if not public.is_valid_dni(clean_dni) then
     raise exception 'Introduce un DNI valido.';
   end if;
 

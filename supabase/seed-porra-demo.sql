@@ -6,12 +6,12 @@ begin;
 
 insert into public.porra_users (id, dni, display_name, password_hash)
 values
-  ('20260000-0000-4000-9000-000000000001'::uuid, '11111111A', 'Alba', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
-  ('20260000-0000-4000-9000-000000000002'::uuid, '22222222B', 'David', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
-  ('20260000-0000-4000-9000-000000000003'::uuid, '33333333C', 'Noa', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
+  ('20260000-0000-4000-9000-000000000001'::uuid, '11111111H', 'Alba', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
+  ('20260000-0000-4000-9000-000000000002'::uuid, '22222222J', 'David', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
+  ('20260000-0000-4000-9000-000000000003'::uuid, '33333333P', 'Noa', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
   ('20260000-0000-4000-9000-000000000004'::uuid, '44444444D', 'Martin', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
-  ('20260000-0000-4000-9000-000000000005'::uuid, '55555555E', 'Lara', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
-  ('20260000-0000-4000-9000-000000000006'::uuid, '66666666F', 'Roi', extensions.crypt('torneo26demo', extensions.gen_salt('bf')))
+  ('20260000-0000-4000-9000-000000000005'::uuid, '55555555K', 'Lara', extensions.crypt('torneo26demo', extensions.gen_salt('bf'))),
+  ('20260000-0000-4000-9000-000000000006'::uuid, '66666666Q', 'Roi', extensions.crypt('torneo26demo', extensions.gen_salt('bf')))
 on conflict (dni) do update
 set
   display_name = excluded.display_name,
@@ -21,7 +21,7 @@ set
 with demo_users as (
   select id, row_number() over (order by display_name) as user_order
   from public.porra_users
-  where dni in ('11111111A', '22222222B', '33333333C', '44444444D', '55555555E', '66666666F')
+  where dni in ('11111111H', '22222222J', '33333333P', '44444444D', '55555555K', '66666666Q')
 ),
 demo_matches as (
   select id, row_number() over (order by scheduled_at nulls last, id) as match_order
