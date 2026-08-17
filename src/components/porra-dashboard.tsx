@@ -6,6 +6,7 @@ import {
   ChartNoAxesColumnIncreasing,
   CheckCircle2,
   Filter,
+  Info,
   ListOrdered,
   LogOut,
   RotateCcw,
@@ -200,7 +201,7 @@ export function PorraDashboard({
 }: PorraDashboardProps) {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [user, setUser] = useState<PorraUser | null>(null);
-  const [activeTab, setActiveTab] = useState<"matches" | "ranking" | "account">(
+  const [activeTab, setActiveTab] = useState<"matches" | "ranking" | "rules" | "account">(
     "matches"
   );
   const [authTab, setAuthTab] = useState<"login" | "register">("login");
@@ -540,6 +541,7 @@ export function PorraDashboard({
   const tabs = [
     { id: "matches" as const, label: "Partidos", icon: CalendarDays },
     { id: "ranking" as const, label: "Clasificacion", icon: ListOrdered },
+    { id: "rules" as const, label: "Reglas", icon: Info },
     { id: "account" as const, label: "Cuenta", icon: LogOut },
   ];
 
@@ -569,7 +571,7 @@ export function PorraDashboard({
             </div>
           </div>
         </div>
-        <nav className="grid grid-cols-3 border-t border-white/10">
+        <nav className="grid grid-cols-4 border-t border-white/10">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const selected = activeTab === tab.id;
@@ -936,6 +938,79 @@ export function PorraDashboard({
               <p className="text-sm text-ink/60">Todavia no hay clasificacion.</p>
             ) : null}
           </div>
+        </section>
+      ) : null}
+
+      {activeTab === "rules" ? (
+        <section className="grid gap-4">
+          <article className="rounded border border-line bg-white p-5 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-black uppercase text-gold-700">Reglas</p>
+                <h2 className="text-2xl font-black uppercase">Sistema de puntos</h2>
+              </div>
+              <Info className="text-gold-500" size={28} aria-hidden="true" />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded border border-line bg-fog px-4 py-4">
+                <p className="text-2xl font-black text-gold-700">+5</p>
+                <p className="mt-1 text-sm font-bold text-ink">Ganador o signo</p>
+                <p className="mt-2 text-xs leading-5 text-ink/60">
+                  Aciertas el equipo ganador. En grupos, tambien cuenta acertar el
+                  empate.
+                </p>
+              </div>
+              <div className="rounded border border-line bg-fog px-4 py-4">
+                <p className="text-2xl font-black text-gold-700">+5</p>
+                <p className="mt-1 text-sm font-bold text-ink">Diferencia de goles</p>
+                <p className="mt-2 text-xs leading-5 text-ink/60">
+                  Aciertas la diferencia entre goles local y visitante.
+                </p>
+              </div>
+              <div className="rounded border border-line bg-fog px-4 py-4">
+                <p className="text-2xl font-black text-gold-700">+7</p>
+                <p className="mt-1 text-sm font-bold text-ink">Resultado exacto</p>
+                <p className="mt-2 text-xs leading-5 text-ink/60">
+                  Aciertas el marcador exacto del partido.
+                </p>
+              </div>
+              <div className="rounded border border-line bg-fog px-4 py-4 sm:col-span-3">
+                <p className="text-2xl font-black text-gold-700">+3</p>
+                <p className="mt-1 text-sm font-bold text-ink">Primer goleador</p>
+                <p className="mt-2 text-xs leading-5 text-ink/60">
+                  Suma si eliges el primer goleador y coincide con el primer gol
+                  registrado en el partido.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article className="rounded border border-line bg-white p-5 shadow-sm">
+            <h3 className="mb-3 text-lg font-black uppercase">Eliminatorias</h3>
+            <div className="space-y-3 text-sm leading-6 text-ink/70">
+              <p>
+                En cuartos, semifinales y final no puede haber empate como ganador
+                final. Si pronosticas empate, debes elegir quien gana en penaltis.
+              </p>
+              <p>
+                El marcador cuenta para resultado exacto y diferencia. El ganador en
+                penaltis cuenta para los puntos de ganador.
+              </p>
+              <p className="rounded border border-gold-400 bg-gold-50 px-3 py-2 font-bold text-ink">
+                Ejemplo: pronosticas 2-2 y gana tu equipo en penaltis. Si el partido
+                acaba 0-0 y gana ese equipo en penaltis, sumas 10 puntos: ganador y
+                diferencia.
+              </p>
+            </div>
+          </article>
+
+          <article className="rounded border border-line bg-white p-5 shadow-sm">
+            <h3 className="mb-3 text-lg font-black uppercase">Cierre de apuestas</h3>
+            <p className="text-sm leading-6 text-ink/70">
+              Cada partido se puede editar hasta su hora de inicio o hasta que deje
+              de estar programado. Una vez cerrado, el resultado queda bloqueado.
+            </p>
+          </article>
         </section>
       ) : null}
 
