@@ -1,6 +1,9 @@
 alter table public.porra_predictions
   add column if not exists penalty_winner_team_id uuid references public.teams(id) on delete set null;
 
+drop function if exists public.get_porra_predictions(uuid);
+drop function if exists public.save_porra_prediction(uuid, uuid, integer, integer, uuid);
+
 create or replace function public.prediction_winner_team_id(
   home_team_id_input uuid,
   away_team_id_input uuid,
