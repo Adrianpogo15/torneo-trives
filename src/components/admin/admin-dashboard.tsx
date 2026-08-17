@@ -658,7 +658,6 @@ export function AdminDashboard() {
     event.preventDefault();
     setSaving(true);
     setError(null);
-    const returnToTeamId = playerForm.team_id;
 
     const payload = {
       team_id: playerForm.team_id,
@@ -679,8 +678,8 @@ export function AdminDashboard() {
 
     setPlayerForm(emptyPlayerForm);
     setPlayerModalTeamId(null);
+    setPlayerListTeamId(null);
     await loadData();
-    setPlayerListTeamId(returnToTeamId);
     showSaved("Jugador guardado.");
   }
 
@@ -930,7 +929,6 @@ export function AdminDashboard() {
     event.preventDefault();
     setSaving(true);
     setError(null);
-    const returnToMatchId = eventForm.match_id;
     const previousEvent = eventForm.id
       ? events.find((item) => item.id === eventForm.id)
       : null;
@@ -968,8 +966,8 @@ export function AdminDashboard() {
 
     setEventForm(emptyEventForm);
     setEventModalMatchId(null);
+    setEventListMatchId(null);
     await loadData();
-    setEventListMatchId(returnToMatchId);
     showSaved("Evento guardado.");
   }
 
