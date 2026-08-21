@@ -325,15 +325,138 @@ function directMatchComparison(a: StandingRow, b: StandingRow, matches: Match[])
   return 0;
 }
 
-export function sortStandings(rows: StandingRow[], matches: Match[] = []) {
-  return [...rows].sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points;
-    const directComparison = directMatchComparison(a, b, matches);
-    if (directComparison !== 0) return directComparison;
-    if (b.goal_difference !== a.goal_difference) return b.goal_difference - a.goal_difference;
-    if (a.card_points !== b.card_points) return a.card_points - b.card_points;
-    return 0;
+type TieStats = {
+  team_id: string;
+  points: number;
+  penalty_wins: number;
+  penalty_difference: number;
+  penalties_for: number;
+};
+
+function getFinishedTieMatches(rows: StandingRow[], matches: Match[]) {
+  const teamIds = new Set(rows.map((row) => row.team_id));
+  const groupId = rows[0]?.group_id;
+
+  return matches.filter(
+    (match) =>
+      match.group_id === groupId &&
+      match.status === "finished" &&
+      match.home_team_id != null &&
+      match.away_team_id != null &&
+      teamIds.has(match.home_team_id) &&
+      teamIds.has(match.away_team_id) &&
+      match.home_score != null &&
+      match.away_score != null
+  );
+}
+
+function calculateTieStats(rows: StandingRow[], matches: Match[]) {
+  const stats = new Map<string, TieStats>();
+
+  rows.forEach((row) => {
+    stats.set(row.team_id, {
+      team_id: row.team_id,
+      points: 0,
+      penalty_wins: 0,
+      penalty_difference: 0,
+      penalties_for: 0,
+    });
   });
+
+  getFinishedTieMatches(rows, matches).forEach((match) => {
+    const homeStats = stats.get(match.home_team_id || "");
+    const awayStats = stats.get(match.away_team_id || "");
+
+    if (!homeStats || !awayStats || match.home_score == null || match.away_score == null) {
+      return;
+    }
+
+    if (match.home_score > match.away_score) {
+      homeStats.points += 3;
+    } else if (match.away_score > match.home_score) {
+      awayStats.points += 3;
+    } else {
+      homeStats.points += 1;
+      awayStats.points += 1;
+    }
+
+    if (
+      match.home_penalty_score != null &&
+      match.away_penalty_score != null &&
+      match.home_penalty_score !== match.away_penalty_score
+    ) {
+      homeStats.penalties_for += match.home_penalty_score;
+      awayStats.penalties_for += match.away_penalty_score;
+      homeStats.penalty_difference += match.home_penalty_score - match.away_penalty_score;
+      awayStats.penalty_difference += match.away_penalty_score - match.home_penalty_score;
+
+      if (match.home_penalty_score > match.away_penalty_score) {
+        homeStats.penalty_wins += 1;
+      } else {
+        awayStats.penalty_wins += 1;
+      }
+    }
+  });
+
+  return stats;
+}
+
+function compareByTieStats(a: StandingRow, b: StandingRow, stats: Map<string, TieStats>) {
+  const aStats = stats.get(a.team_id);
+  const bStats = stats.get(b.team_id);
+
+  if (!aStats || !bStats) {
+    return 0;
+  }
+
+  if (bStats.points !== aStats.points) return bStats.points - aStats.points;
+  if (bStats.penalty_wins !== aStats.penalty_wins) {
+    return bStats.penalty_wins - aStats.penalty_wins;
+  }
+  if (bStats.penalty_difference !== aStats.penalty_difference) {
+    return bStats.penalty_difference - aStats.penalty_difference;
+  }
+  if (bStats.penalties_for !== aStats.penalties_for) {
+    return bStats.penalties_for - aStats.penalties_for;
+  }
+
+  return 0;
+}
+
+function compareFallback(a: StandingRow, b: StandingRow) {
+  if (b.goal_difference !== a.goal_difference) return b.goal_difference - a.goal_difference;
+  if (b.goals_for !== a.goals_for) return b.goals_for - a.goals_for;
+  if (a.card_points !== b.card_points) return a.card_points - b.card_points;
+  return 0;
+}
+
+function sortTiedRows(rows: StandingRow[], matches: Match[]) {
+  if (rows.length <= 1) {
+    return rows;
+  }
+
+  if (rows.length === 2) {
+    return [...rows].sort((a, b) => directMatchComparison(a, b, matches) || compareFallback(a, b));
+  }
+
+  const stats = calculateTieStats(rows, matches);
+
+  return [...rows].sort((a, b) => compareByTieStats(a, b, stats) || compareFallback(a, b));
+}
+
+export function sortStandings(rows: StandingRow[], matches: Match[] = []) {
+  const sortedByPoints = [...rows].sort((a, b) => b.points - a.points);
+  const sortedRows: StandingRow[] = [];
+
+  for (let index = 0; index < sortedByPoints.length; ) {
+    const points = sortedByPoints[index].points;
+    const tiedRows = sortedByPoints.filter((row) => row.points === points);
+
+    sortedRows.push(...sortTiedRows(tiedRows, matches));
+    index += tiedRows.length;
+  }
+
+  return sortedRows;
 }
 
 export function sortBestThirds(rows: StandingRow[]) {
